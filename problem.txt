@@ -1,0 +1,54 @@
+It's crunch time, and you have been called in to help develop Microsoft's latest Real Time Strategy game, Wage of Empires. In this game, players are given an empire, land represented by a rectangular grid. Each cell in this grid is called a tile and each tile will either be empty land or can be improved by having a building placed upon it.
+
+There are four kinds of resources in the game: wood, ore, food, and gold. For each type or resource, there is a building type that produces that resource. A lumber yard produces wood. A mine produces ore. A farm produces food. A tax house produces gold. Each one of these buildings produces 100 of their respective resources per hour.
+
+In addition to production buildings, there are helper buildings. If these buildings border a production building, they will provide a percentage bonus increase in some cases. Bordering a building means that you are immediately left, right, above, or below the other building or are immediately to one of the four diagonals. Thus a helper building can provide a bonus to at most 8 other buildings.
+
+The helper buildings are as follows:
+
+A saw mill provides a 50% bonus to all lumber yards that it borders. However, each lumber yard may only receive this bonus from at most one saw mill.
+A blacksmith provides a 50% bonus to all mines that it borders. However, each mine may only receive this bonus from at most one blacksmith.
+A wind mill provides a 50% bonus to all farms that it borders. However, each farm may only receive this bonus from at most one wind mill.
+In addition, a farm receives a 10% bonus from all open land tiles that it borders.
+A cottage provides a 25% bonus to all lumber yards, mines, and tax collectors that it borders, but no bonus to farms. Each cottage bordering the production building contributes to the bonus percentage of that production building.
+Note that helper buildings are never limited as to the number of production buildings that they can help. For example, a Saw Mill that borders two Lumber Yards will provide its 50% bonus to each of the lumber yards.
+
+The total production of resources is determined by adding all of the bonus percentages together, applying them to the original production of the building, and then adding that amount to the base production of the building.
+
+For example, consider a farm with 2 wind mills, 2 cottages, 1 lumber yard, and 3 open land tiles bordering it. It would get a bonus of 50% + 10% + 10% + 10% = 80%. 80% of 100 is 80. 80 is added to the original production of 100. Thus the farm produces 180 food per hour.
+
+Your job is to provide the code for the game that determines how much wood, ore, food, and gold the empire produces.
+
+Input definition
+
+The input file starts with a single line with two numbers. These numbers are first the number of rows in the empire's grid and second the number of columns.
+
+After the first line there will be N more lines, where N is the number of rows read in the first line. Each of these lines will have M characters, where M is the number of columns. Each character will represent a particular building type or open land.
+
+O - Open Land
+L - Lumber Yard
+M - Mine
+F - Farm
+T - Tax Collector
+S - Saw Mill
+B - Blacksmith
+W - Wind Mill
+C - Cottage
+Output definition
+
+The output should be four whole numbers. These numbers represent the amount of wood, ore, food, and gold the empire produces per hour. They should be presented in that order on a single line with only a single space character separating them and no leading or trailing whitespace.
+
+Example input
+
+4 5
+
+TOOOO
+OCMOO
+OFFFS
+OOMCL
+
+Example output
+
+175 250 380 125
+
+output 0 725 240 0 for practice.txt

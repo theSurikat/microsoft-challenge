@@ -3,5 +3,3 @@ FCCCW
 OMMMC
 FBCBW
 OOOSO
-
-output 0 725 240 0

@@ -8,44 +8,25 @@
 (def big-string "Integer-set-product-combinations_InputForSubmission_2.txt")
 (def practice "PracticeInput.txt")
 
-(defn multi-tenth [x]
-  (* x .1))
-
-(defn multi-quarter [x]
-  (* x .25))
-
-(defn multi-half [x]
-  (* x .5))
-
-(def our-table
-  {
-    :O multi-tenth
-    :L 100
-    :M 100
-    :F 100
-    :T 100
-    :S multi-half
-    :B multi-half
-    :W multi-half
-    :C multi-quarter
-    })
-
 (defn parse-int [s]
+  "Parse the file to seperate integers listed"
    (Integer. (re-find  #"\d+" s )))
 
-(defn file-to-list-string [file]
+(defn file-to-list [file]
  "Takes a text file and turns it to a list of it's contents"
  (map parse-int
    (str/split (slurp file) #",")))
 
 (defn find-prods [file]
-    (drop 1
-      (sort
-        (map #(apply * %)
-          (map #(into [] %)
-            (combo/subsets (file-to-list file)))))))
+  "Finds the products of the list"
+  (drop 1
+    (sort
+      (map #(apply * %)
+        (map #(into [] %)
+          (combo/subsets (file-to-list file)))))))
 
 (defn writeDaStuff [fileIn fileOut]
+  "writes the output to a file"
   (spit fileOut
     (apply str
       (interpose ","
@@ -61,20 +42,92 @@
   "Turns a list of strings into vectors"
   (map #(into [] %)
     (map #(str/split % #"")
-      (drop 1
-          (file-to-list-string file)))))
+          (file-to-list-string file))))
 
-(defn set-value [set idx]
+(defn sum
+  "Take the sum of a collection"
+  ([xx] (sum xx 0))
+  ([xx total]
+    (if (empty? xx)
+      total
+      (recur (rest xx) (+ (first xx) total)))))
+
+(defn count-goal [look-for set idx]
+  "Counts the number of cottages in a set around the index"
+    (sum
+    [
+      (if (= look-for (nth set (- idx 1) 0)) 1 0)
+      (if (= look-for (nth set idx 0)) 1 0)
+      (if (= look-for (nth set (+ idx 1) 0)) 1 0) ] ))
+
+(defn find-all
+  "Finds all the cottages near a square"
+  [look-for set-above set set-below idx]
+  (sum
+    [
+      (count-goal look-for set-above idx)
+      (count-goal look-for set idx)
+      (count-goal look-for set-below idx) ]))
+
+(defn not-nil?
+  "Sees if X is null"
+  [x]
+  (complement (nil? x)))
+
+(defn set-value
+  "Set the value of a sqaure"
+  [set-above set set-below idx]
   (let [cur (nth set idx)]
-    (if (not (= cur "F"))
-      (let [num-cottage (find-cottages set idx)])
-      (let [open-land (find-all-land set idx)]))
+  (let [num-cottage (find-all "C" set-above set set-below idx)]
+  (let [open-land (find-all "O" set-above set set-below idx)]
     (cond
-      (= cur "L") (assoc set idx
-                    ["wood" (+ 100 (* 100 (+ (* num-cottage 0.25) (if (saw-mil?) 0.5 0))))])
-      (= cur "M") (assoc set idx
-                    ["ore" (+ 100 (* 100 (+ (* num-cottage 0.25) (if (black-smith?) 0.5 0))))])
-      (= cur "F") (assoc set idx
-                    ["food" (+ 100 (* 100 (+ (* open-land 0.1) (if (wind-mill?) 0.5 0))))])
-      (= cur "T") (assoc set idx
-                    ["gold" (+ 100 (* 100 (* num-cottage 0.25))) ]))))
+      (= cur "L") {:wood
+                  (+ 100
+                    (* 100
+                      (+
+                        (* num-cottage 0.25)
+                        (if (zero? (find-all "S" set-above set set-below idx)) 0 0.5))))}
+      (= cur "M") {:ore
+                  (+ 100
+                    (* 100
+                      (+
+                        (* num-cottage 0.25)
+                        (if (zero? (find-all "B" set-above set set-below idx)) 0 0.5))))}
+      (= cur "F") {:food
+                  (+ 100
+                    (* 100
+                      (+
+                        (* open-land 0.25)
+                        (if (zero? (find-all "W" set-above set set-below idx)) 0 0.5))))}
+      (= cur "T") {:gold
+                  (+ 100
+                    (* 100 (* num-cottage 0.25)))}
+                    )))))
+
+(defn set-all-values-in-set
+  "Given the set, the set above, and below it, sets the value of all sets"
+  [set-above set set-below range]
+  (remove nil?
+    (map #(set-value set-above set set-below %) range)))
+
+(defn all-values-for-set
+  "Given a set of vectors, return a set of vectors with the value and type"
+  ([master-set width]
+    (let [return-set
+      (into []
+        (set-all-values-in-set
+          nil
+          (first master-set)
+          (second master-set)
+          (into [] (range width))))]
+      (all-values-for-set (first master-set) (rest master-set) width (apply merge-with + return-set)))
+  ([above-set master-set width return-set]
+    (if (empty? master-set) return-set
+    (let [new-set
+      (into []
+        (set-all-values-in-set
+          (first master-set)
+          (second master-set)
+          (get master-set 2)
+          (into [] (range width))))]
+      (recur (first master-set) (rest master-set) width (apply merge-with + [return-set new-set]))))))
