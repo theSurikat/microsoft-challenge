@@ -41,7 +41,6 @@ The output should be four whole numbers. These numbers represent the amount of w
 Example input
 
 4 5
-
 TOOOO
 OCMOO
 OFFFS

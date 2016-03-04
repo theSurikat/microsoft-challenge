@@ -2,7 +2,8 @@
   (:gen-class)
   (:require [clojure.string :as str])
   (:require [clojure.math.combinatorics :as combo])
-  (:require [clojure.data.csv :as csv]))
+  (:require [clojure.data.csv :as csv])
+  (:require [clojure.set :as set]))
 
 (def outPut "output.txt")
 (def big-string "Integer-set-product-combinations_InputForSubmission_2.txt")
@@ -97,7 +98,7 @@
                   (+ 100
                     (* 100
                       (+
-                        (* open-land 0.25)
+                        (* open-land 0.1)
                         (if (zero? (find-all "W" set-above set set-below idx)) 0 0.5))))}
       (= cur "T") {:gold
                   (+ 100
@@ -111,23 +112,44 @@
     (map #(set-value set-above set set-below %) range)))
 
 (defn all-values-for-set
-  "Given a set of vectors, return a set of vectors with the value and type"
+  "Given a set of vectors, return a set of maps"
   ([master-set width]
-    (let [return-set
-      (into []
-        (set-all-values-in-set
-          nil
-          (first master-set)
-          (second master-set)
-          (into [] (range width))))]
-      (all-values-for-set (first master-set) (rest master-set) width (apply merge-with + return-set)))
+    (all-values-for-set
+      (first master-set)
+      (rest master-set)
+      width
+      (set-all-values-in-set
+        nil
+        (first master-set)
+        (second master-set)
+        (range width))))
   ([above-set master-set width return-set]
-    (if (empty? master-set) return-set
-    (let [new-set
-      (into []
-        (set-all-values-in-set
-          (first master-set)
-          (second master-set)
-          (get master-set 2)
-          (into [] (range width))))]
-      (recur (first master-set) (rest master-set) width (apply merge-with + [return-set new-set]))))))
+    (if (empty? master-set)
+      (apply merge-with + return-set)
+      (recur
+        (first master-set)
+        (rest master-set)
+        width
+        (set/union
+          return-set
+          (set-all-values-in-set
+            above-set
+            (first master-set)
+            (second master-set)
+            (range width)))))))
+
+(defn map-returns
+  "Given an input file, return the relevent information"
+  [file]
+  (all-values-for-set
+    (drop 1 (string-list-to-vectors file))
+    (Integer. (last (first (string-list-to-vectors file))))))
+
+(defn output-of-game
+  "Given an input game file, print the output of the game"
+  [fileIn fileOut]
+  (spit fileOut
+    (apply str
+      (interpose " "
+        (map #(if (nil? %) 0 %)
+          (map #(% (map-returns fileIn)) [:wood :ore :food :gold]))))))
