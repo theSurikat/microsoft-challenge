@@ -1,36 +1,15 @@
 # microsoft-challenge
 
-FIXME: description
+A Microsoft Coding Challenge attempted in clojure. 
+The first problem  was simply finding the product of every subset.
+The second was finding the production of a game map.
+This was attempted in a functional method to increase my skills both with the language and that way of thinking.
 
-## Installation
+## How to run
 
-Download from http://example.com/FIXME.
-
-## Usage
-
-FIXME: explanation
-
-    $ java -jar microsoft-challenge-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+Open a terminal and run via the Lien-repl. The text files are named according to what they are for. You can modify them and test different possible inputs.
 
 ## License
-
-Copyright © 2016 FIXME
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
